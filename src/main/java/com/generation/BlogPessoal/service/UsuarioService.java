@@ -1,12 +1,14 @@
 package com.generation.BlogPessoal.service;
 
 import java.nio.charset.Charset;
-import org.apache.commons.codec.binary.Base64;
 import java.util.Optional;
 
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.generation.BlogPessoal.model.Usuario;
 import com.generation.BlogPessoal.model.UsuarioLogin;
@@ -14,40 +16,56 @@ import com.generation.BlogPessoal.repository.UsuarioRepository;
 
 @Service
 public class UsuarioService {
-	
+
+
 	@Autowired
 	private UsuarioRepository usuarioRepository;
 
-	public Optional<Usuario> cadastrarUsuario(Usuario usuario){
+	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
 			return Optional.empty();
-		
+
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
 		return Optional.of(usuarioRepository.save(usuario));
 	}
-	
-	
+
+
 	public Optional<UsuarioLogin> autenticarUsuario(Optional<UsuarioLogin> usuarioLogin){
-		
+
 		Optional<Usuario> usuario = usuarioRepository.findByUsuario(usuarioLogin.get().getUsuario());
-		
+
 		if(usuario.isPresent()) {
-			
+
 			usuarioLogin.get().setId(usuario.get().getId());
 			usuarioLogin.get().setNome(usuario.get().getNome());
-			usuarioLogin.get().setFoto(usuario.get().getFoto());
 			usuarioLogin.get().setToken(gerarBasicToken(usuarioLogin.get().getUsuario(), usuarioLogin.get().getSenha()));
 			usuarioLogin.get().setSenha(usuario.get().getSenha());
-			
+
 			return usuarioLogin;
 		}
-		
+
 		return Optional.empty();
-		
+
 	}
 	
-	
+	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+
+		if (usuarioRepository.findById(usuario.getId()).isPresent()) {
+			Optional<Usuario> buscaUsuario = usuarioRepository.findByUsuario(usuario.getUsuario());
+
+			if (buscaUsuario.isPresent()) {				
+				if (buscaUsuario.get().getId() != usuario.getId())
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+			}
+			
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));
+
+			return Optional.of(usuarioRepository.save(usuario));
+		} 
+			
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado!", null);		
+	}
 	
 	private String criptografarSenha(String senha) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -66,4 +84,6 @@ public class UsuarioService {
 		return "Basic " + new String(tokenBase64);
 
 	}
+	
+
 }

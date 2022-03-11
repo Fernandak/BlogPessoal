@@ -24,7 +24,6 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	
 	private String nome;
 
 	@NotNull(message = "O atributo Usuário é Obrigatório!")
@@ -35,11 +34,21 @@ public class Usuario {
 	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
 	private String senha;
 
-	private String foto;
-
 	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties("usuario")
 	private List<PostagemModel> postagem;
+
+	//construtor cheio
+	public Usuario(long id, String nome, String usuario, String senha) {
+		this.id = id;
+		this.nome = nome;
+		this.usuario = usuario;
+		this.senha = senha;
+
+
+	}
+	//construtor vazio
+	public Usuario() {}
 
 	public Long getId() {
 		return id;
@@ -73,14 +82,6 @@ public class Usuario {
 		this.senha = senha;
 	}
 
-	public String getFoto() {
-		return foto;
-	}
-
-	public void setFoto(String foto) {
-		this.foto = foto;
-	}
-
 	public List<PostagemModel> getPostagem() {
 		return postagem;
 	}
@@ -89,5 +90,5 @@ public class Usuario {
 		this.postagem = postagem;
 	}
 
-	
+
 }
