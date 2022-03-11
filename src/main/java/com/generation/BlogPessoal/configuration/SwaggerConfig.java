@@ -22,9 +22,9 @@ public class SwaggerConfig {
 		return new OpenAPI()
 				.info(new Info().title("Projeto Blog Pessoal").description("Projeto Blog Pessoal - Generation Brasil")
 						.version("v1.0.0").license(new License().name("generation.com.br").url("http://springdoc.org"))
-						.contact(new Contact().name("Jessica Lopes")
-								.url("https://github.com/JeskaLopes/BlogPessoalSecurity")
-								.email("rafaelproinfo@gmail.com")))
+						.contact(new Contact().name("Fernanda Ferreira")
+								.url("https://github.com/Fernandak/BlogPessoal")
+								.email("fernandaknf@gmail.com")))
 				.externalDocs(new ExternalDocumentation().description("Github")
 						.url("https://github.com/conteudoGeneration/"));
 	}
